@@ -1,6 +1,6 @@
 import mouse
 import win32gui, win32con
-pos = (0,0)
+pos = [0,0]
 
 shapes = []
 def draw_shapes():
@@ -11,7 +11,7 @@ def draw_shapes():
     big = 10
     if int(key) == int(id):
       big = 5
-    canvas.coords(shape, int(client["pos"][0])-big, int(client["pos"][1])-big, int(client["pos"][0])+big, int(client["pos"][1])+big)
+    canvas.coords(shape, round(float(client["pos"][0]) * res_x)-big, round(float(client["pos"][1]) * res_y)-big, round(float(client["pos"][0]) * res_x)+big, round(float(client["pos"][1]) * res_y)+big)
 
 from tkinter import *
 root=Tk()
@@ -51,7 +51,10 @@ id = client_socket.getsockname()[1]
 def send_pos():
   global pos
   global clients
-  pos = mouse.get_position()
+  pos = list(mouse.get_position())
+  pos[0] = round(pos[0]/res_x,10)
+  pos[1] = round(pos[1]/res_y,10)
+  print(pos)
   message = "{},{}".format(pos[0], pos[1])
   client_socket.sendall(message.encode('utf-8'))
   data = client_socket.recv(1024)
