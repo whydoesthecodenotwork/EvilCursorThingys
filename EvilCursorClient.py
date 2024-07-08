@@ -54,7 +54,7 @@ def send_pos():
   pos = list(mouse.get_position())
   pos[0] = round(pos[0]/res_x,10)
   pos[1] = round(pos[1]/res_y,10)
-  print(pos)
+  # print(pos)
   message = "{},{}".format(pos[0], pos[1])
   client_socket.sendall(message.encode('utf-8'))
   data = client_socket.recv(1024)
