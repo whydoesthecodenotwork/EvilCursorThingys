@@ -5,7 +5,7 @@ import threading
 import json
 from colorsys import hls_to_rgb
 import randomcolor
-rand_color = randomcolor.RandomColor()
+rand_color = randomcolor.RandomColor({luminosity: 'bright',})
 
 clients = {}
 
@@ -13,17 +13,23 @@ def handle_client(client_socket,client_address):
   # print(client_address[1])
   clients[client_address[1]] = {"pos": [0,0], "color": rand_color.generate()}
   while True:
-    data = client_socket.recv(1024)
-    # user absolutely EXPLODED. exit while loop
-    if not data:
+    try:
+      data = client_socket.recv(1024)
+      # user absolutely EXPLODED. exit while loop
+      if not data:
+        break
+      message = data.decode('utf-8')
+      # print(f"Received message: {message}")
+      clients[client_address[1]]["pos"] = message.split(",")
+      # response = "Server received your message: " + message
+      client_socket.sendall(json.dumps(clients).encode('utf-8'))
+    except Exception as e:
+      print(e)
       break
-    message = data.decode('utf-8')
-    # print(f"Received message: {message}")
-    clients[client_address[1]]["pos"] = message.split(",")
-    # response = "Server received your message: " + message
-    client_socket.sendall(json.dumps(clients).encode('utf-8'))
   # it's joever
+  print(client_address[1], "died!")
   del clients[client_address[1]]
+  print(clients)
   client_socket.close()
 
 def main():
