@@ -60,7 +60,12 @@ def send_pos():
   data = client_socket.recv(1024)
   response = data.decode('utf-8')
   # print(f"Server response: {response}")
-  clients = json.loads(response)
+  data = json.loads(response)
+  for key in data:
+    if (clients.get(key) == None):
+      clients[key] = {}
+    clients[key]["pos"] = data[key]["pos"]
+    clients[key]["color"] = data[key]["color"]
 
 while True:
   root.update()
