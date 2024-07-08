@@ -1,10 +1,9 @@
 import mouse
 import win32gui, win32con
-shapes = []
-
 pos = (0,0)
-def get_position():
-  pos = mouse.get_position()
+
+shapes = []
+def draw_shapes():
   for rect in shapes:
     canvas.coords(rect, pos[0]-10, pos[1]-10, pos[0]+10, pos[1]+10)
 
@@ -35,6 +34,24 @@ l_ex_style = win32gui.GetWindowLong(hwnd, win32con.GWL_EXSTYLE)
 l_ex_style |= win32con.WS_EX_TRANSPARENT | win32con.WS_EX_LAYERED
 win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, l_ex_style)
 
+import socket
+import threading
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+host = '127.0.0.1'
+port = 12345
+client_socket.connect((host, port))
+
+def send_pos():
+  global pos
+  pos = mouse.get_position()
+  message = "{},{}".format(pos[0], pos[1])
+  client_socket.sendall(message.encode('utf-8'))
+  data = client_socket.recv(1024)
+  response = data.decode('utf-8')
+  print(f"Server response: {response}")
+
 while True:
   root.update()
-  get_position()
+  draw_shapes()
+  send_pos()
