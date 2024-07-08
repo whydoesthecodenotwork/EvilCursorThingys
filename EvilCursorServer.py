@@ -3,12 +3,16 @@
 import socket
 import threading
 import json
+from colorsys import hls_to_rgb
 
 clients = {}
 
 def handle_client(client_socket,client_address):
   # print(client_address[1])
-  clients[client_address[1]] = {"pos": [0,0]}
+  hue = (client_address[1]%360)/360
+  rgb = hls_to_rgb(hue, 0.5, 1)
+  rgb = [255*x for x in rgb]
+  clients[client_address[1]] = {"pos": [0,0], "color": '#' + ''.join(['{:02X}'.format(int(round(x))) for x in rgb])}
   while True:
     data = client_socket.recv(1024)
     # user absolutely EXPLODED. exit while loop
@@ -19,6 +23,7 @@ def handle_client(client_socket,client_address):
     clients[client_address[1]]["pos"] = message.split(",")
     # response = "Server received your message: " + message
     client_socket.sendall(json.dumps(clients).encode('utf-8'))
+  # it's joever
   del clients[client_address[1]]
   client_socket.close()
 

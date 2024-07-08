@@ -7,7 +7,7 @@ def draw_shapes():
   canvas.delete('all')
   for key in clients:
     client = clients[key]
-    rect = canvas.create_rectangle(0, 0, 0, 0,outline="blue", fill="blue")
+    rect = canvas.create_oval(0, 0, 0, 0,outline=client["color"], width=3)
     canvas.coords(rect, int(client["pos"][0])-10, int(client["pos"][1])-10, int(client["pos"][0])+10, int(client["pos"][1])+10)
 
 from tkinter import *
