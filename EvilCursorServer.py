@@ -7,7 +7,7 @@ import json
 clients = {}
 
 def handle_client(client_socket,client_address):
-  print(client_address[1])
+  # print(client_address[1])
   clients[client_address[1]] = {"pos": [0,0]}
   while True:
     data = client_socket.recv(1024)
@@ -15,10 +15,11 @@ def handle_client(client_socket,client_address):
     if not data:
       break
     message = data.decode('utf-8')
-    print(f"Received message: {message}")
+    # print(f"Received message: {message}")
     clients[client_address[1]]["pos"] = message.split(",")
     # response = "Server received your message: " + message
     client_socket.sendall(json.dumps(clients).encode('utf-8'))
+  del clients[client_address[1]]
   client_socket.close()
 
 def main():

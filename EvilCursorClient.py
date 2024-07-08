@@ -4,8 +4,11 @@ pos = (0,0)
 
 shapes = []
 def draw_shapes():
-  for rect in shapes:
-    canvas.coords(rect, pos[0]-10, pos[1]-10, pos[0]+10, pos[1]+10)
+  canvas.delete('all')
+  for key in clients:
+    client = clients[key]
+    rect = canvas.create_rectangle(0, 0, 0, 0,outline="blue", fill="blue")
+    canvas.coords(rect, int(client["pos"][0])-10, int(client["pos"][1])-10, int(client["pos"][0])+10, int(client["pos"][1])+10)
 
 from tkinter import *
 root=Tk()
@@ -24,10 +27,6 @@ root.wm_attributes("-topmost", 1)
 canvas = Canvas(bg="white", width=res_x, height=res_y, borderwidth=0, highlightthickness=0)
 canvas.pack()
 
-shapes.append(canvas.create_rectangle(0, 0, 0, 0,outline="blue", fill="blue"))
-shapes.append(canvas.create_rectangle(0, 0, 0, 0,outline="red", fill="red"))
-shapes.append(canvas.create_rectangle(0, 0, 0, 0,outline="green", fill="green"))
-
 root.update()
 hwnd = win32gui.FindWindow(None, "evilcursorthing")
 l_ex_style = win32gui.GetWindowLong(hwnd, win32con.GWL_EXSTYLE)
@@ -41,14 +40,20 @@ host = '100.101.64.152'
 port = 12345
 client_socket.connect((host, port))
 
+import json
+
+clients = {}
+
 def send_pos():
   global pos
+  global clients
   pos = mouse.get_position()
   message = "{},{}".format(pos[0], pos[1])
   client_socket.sendall(message.encode('utf-8'))
   data = client_socket.recv(1024)
   response = data.decode('utf-8')
   print(f"Server response: {response}")
+  clients = json.loads(response)
 
 while True:
   root.update()
