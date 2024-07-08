@@ -7,8 +7,11 @@ def draw_shapes():
   canvas.delete('all')
   for key in clients:
     client = clients[key]
-    rect = canvas.create_oval(0, 0, 0, 0,outline=client["color"], width=3)
-    canvas.coords(rect, int(client["pos"][0])-10, int(client["pos"][1])-10, int(client["pos"][0])+10, int(client["pos"][1])+10)
+    shape = canvas.create_oval(0, 0, 0, 0,outline=client["color"], width=3)
+    big = 10
+    if int(key) == int(id):
+      big = 5
+    canvas.coords(shape, int(client["pos"][0])-big, int(client["pos"][1])-big, int(client["pos"][0])+big, int(client["pos"][1])+big)
 
 from tkinter import *
 root=Tk()
@@ -43,6 +46,7 @@ client_socket.connect((host, port))
 import json
 
 clients = {}
+id = client_socket.getsockname()[1]
 
 def send_pos():
   global pos
@@ -52,7 +56,7 @@ def send_pos():
   client_socket.sendall(message.encode('utf-8'))
   data = client_socket.recv(1024)
   response = data.decode('utf-8')
-  print(f"Server response: {response}")
+  # print(f"Server response: {response}")
   clients = json.loads(response)
 
 while True:
