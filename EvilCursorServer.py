@@ -5,13 +5,13 @@ import threading
 import json
 from colorsys import hls_to_rgb
 import randomcolor
-rand_color = randomcolor.RandomColor({luminosity: 'bright',})
+rand_color = randomcolor.RandomColor()
 
 clients = {}
 
 def handle_client(client_socket,client_address):
   # print(client_address[1])
-  clients[client_address[1]] = {"pos": [0,0], "color": rand_color.generate()}
+  clients[client_address[1]] = {"pos": [0,0], "color": rand_color.generate(luminosity='bright')}
   while True:
     try:
       data = client_socket.recv(1024)
