@@ -35,10 +35,9 @@ l_ex_style |= win32con.WS_EX_TRANSPARENT | win32con.WS_EX_LAYERED
 win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, l_ex_style)
 
 import socket
-import threading
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host = '127.0.0.1'
+host = '100.101.64.152'
 port = 12345
 client_socket.connect((host, port))
 

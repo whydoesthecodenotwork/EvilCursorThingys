@@ -2,8 +2,13 @@
 
 import socket
 import threading
+import json
 
-def handle_client(client_socket):
+clients = {}
+
+def handle_client(client_socket,client_address):
+  print(client_address[1])
+  clients[client_address[1]] = {"pos": [0,0]}
   while True:
     data = client_socket.recv(1024)
     # user absolutely EXPLODED. exit while loop
@@ -11,8 +16,9 @@ def handle_client(client_socket):
       break
     message = data.decode('utf-8')
     print(f"Received message: {message}")
-    response = "Server received your message: " + message
-    client_socket.sendall(response.encode('utf-8'))
+    clients[client_address[1]]["pos"] = message.split(",")
+    # response = "Server received your message: " + message
+    client_socket.sendall(json.dumps(clients).encode('utf-8'))
   client_socket.close()
 
 def main():
@@ -27,7 +33,7 @@ def main():
   while True:
     client_socket, client_address = server_socket.accept()
     print(f"Accepted connection from {client_address}")
-    client_handler = threading.Thread(target=handle_client, args=(client_socket,))
+    client_handler = threading.Thread(target=handle_client, args=(client_socket,client_address,))
     client_handler.start()
 
 if __name__ == "__main__":
