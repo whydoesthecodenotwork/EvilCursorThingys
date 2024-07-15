@@ -7,11 +7,12 @@ def draw_shapes():
   canvas.delete('all')
   for key in clients:
     client = clients[key]
-    shape = canvas.create_oval(0, 0, 0, 0,outline=client["color"], width=3)
+    shape = canvas.create_oval(0, 0, 0, 0, outline=client["color"], width=3)
     big = 10
     if int(key) == int(id):
       big = 5
-    canvas.coords(shape, round(float(client["pos"][0]) * res_x)-big, round(float(client["pos"][1]) * res_y)-big, round(float(client["pos"][0]) * res_x)+big, round(float(client["pos"][1]) * res_y)+big)
+    # the design is very human
+    canvas.coords(shape, (round(int(client["pos"][0]) / int(client["res"][0]) * res_x)) - big, (round(int(client["pos"][1]) / int(client["res"][1]) * res_y)) - big, (round(int(client["pos"][0]) / int(client["res"][0]) * res_x)) + big, (round(int(client["pos"][1]) / int(client["res"][1]) * res_y)) + big)
 
 from tkinter import *
 root=Tk()
@@ -39,7 +40,7 @@ win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, l_ex_style)
 import socket
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host = '100.101.64.152'
+host = '100.101.64.166'
 port = 12345
 client_socket.connect((host, port))
 
@@ -52,22 +53,30 @@ def send_pos():
   global pos
   global clients
   pos = list(mouse.get_position())
-  pos[0] = round(pos[0]/res_x,10)
-  pos[1] = round(pos[1]/res_y,10)
-  # print(pos)
   message = "{},{}".format(pos[0], pos[1])
   client_socket.sendall(message.encode('utf-8'))
+
   data = client_socket.recv(1024)
   response = data.decode('utf-8')
-  # print(f"Server response: {response}")
   data = json.loads(response)
   for key in data:
     if (clients.get(key) == None):
       clients[key] = {}
     clients[key]["pos"] = data[key]["pos"]
+    clients[key]["res"] = data[key]["res"]
     clients[key]["color"] = data[key]["color"]
 
+
+# htrrrrrrgdrdgdrgsdftgrggrdg
+pos = list(mouse.get_position())
+message = "help{},{};{},{}".format(res_x, res_y, pos[0], pos[1])
+client_socket.sendall(message.encode('utf-8'))
+data = client_socket.recv(1024)
+response = data.decode('utf-8')
+clients = json.loads(response)
+
 while True:
+  root.lift()
   root.update()
   draw_shapes()
   send_pos()
