@@ -702,6 +702,7 @@ dependencies = [
 name = "evil-cursor-thingy"
 version = "0.1.0"
 dependencies = [
+ "serde_json",
  "tao",
  "tauri",
  "tauri-build",

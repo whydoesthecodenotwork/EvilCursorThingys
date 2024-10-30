@@ -4,7 +4,6 @@
     <p>test trackpad below...</p>
     <div ref="trackpad" class="w-full h-full flex-grow bg-gray-200" @mousemove="log"></div>
     <output>{{ output }}</output>
-    <button @click="invoke('init')">crash lmao 2</button>
   </div>
 </template>
 
@@ -16,7 +15,9 @@ const trackpad = useTemplateRef("trackpad");
 const rect = computed(() => trackpad.value?.getBoundingClientRect());
 const output = ref("");
 
-onMounted(() => {});
+onMounted(() => {
+  invoke("init");
+});
 
 async function log(e: MouseEvent) {
   if (!rect.value) return;
